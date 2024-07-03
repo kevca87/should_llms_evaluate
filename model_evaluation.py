@@ -12,7 +12,8 @@ def url_to_api_url(url):
     return api_url
 
 def get_commits():
-    file_name = "./sampled messages.csv"
+    # file_name = "./sampled messages.csv"
+    file_name = "./manual_labeled.csv"
     df = pd.read_csv(file_name)
     df['api_url'] = df['url'].apply(url_to_api_url)
     return df
@@ -38,34 +39,31 @@ def evaluate_commits_with_instruction(model, commits, instruction):
     answers = []
     explanations = []
     model.instruct(instruction)
+    total = len(commits)
     for idx, commit in commits.iterrows():
-        print(commit)
         model_answer = evaluate_commit(model, commit)
         answers.append(model_answer['answer'])
         explanations.append(model_answer['explanation'])
+        print(f'Progress: {idx+1}/{total}',end='\r')
         sleep(2)
     return  {'answers':answers, 'explanations': explanations}
 
+def get_instructions():
+    file_name = "./data/category_instructions.xlsx"
+    df = pd.read_excel(file_name)
+    df['answer_column_name'] = df['category']
+    df['explanation_column_name'] = df['category'] + '_expl'
+    return df
+
 if __name__ == '__main__':
     commits = get_commits()[:10]
-    print(commits)
     models = get_models()
     contains_whys = []
     explanations = []
-    instructions = [
-        {
-            'answer_column_name':'contains_why',
-            'explanation_column_name':'contains_why_expl',
-            'instruction':'Given the code and the commit message. Does the following commit message contains "Why the changes are needed? (describe the reasons for the changes)"? Explain your decision. Answer in JSON format.\n{ "answer":true/false,\n"explanation":"For example: The first part of the message refers that the fix is needed for improve the performance"\n}'
-        },
-        {
-            'answer_column_name':'contains_what',
-            'explanation_column_name':'contains_what_expl',
-            'instruction':'Given the code and the commit message. Does the following commit message contains "What was changed? (summarize the changes in this commit)"? Explain your decision. Answer in JSON format.\n{ "answer":true/false,\n"explanation":"For example: The first part of the message refers that the fix is needed for improve the performance"\n}'
-        }
-    ]
+    instructions = get_instructions()
     for model in models:
-        for instruction in instructions:
+        for idx, instruction in instructions.iterrows():
+            print (f'Instruction {instruction["category"]}')
             results = evaluate_commits_with_instruction(model, commits, instruction['instruction'])
             commits[instruction['answer_column_name']] = results['answers']
             commits[instruction['explanation_column_name']] = results['explanations']

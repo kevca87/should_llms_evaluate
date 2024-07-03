@@ -4,33 +4,13 @@ from codestral import Codestral
 from github_api import get_commit_info
 from time import sleep
 
-def url_to_api_url(url):
-    url_split = url.split('/')
-    commit_sha = url_split[-1]
-    repo = f'{url_split[-4]}/{url_split[-3]}'
-    api_url = f'https://api.github.com/repos/{repo}/commits/{commit_sha}'
-    return api_url
-
-def get_commits():
-    # file_name = "./sampled messages.csv"
-    file_name = "./manual_labeled.csv"
-    df = pd.read_csv(file_name)
-    df['api_url'] = df['url'].apply(url_to_api_url)
-    return df
-
-def get_commit_diff(request_url):
-    diff = ''
-    changed_files = get_commit_info(request_url)['files']
-    for file in changed_files:
-        diff += (file['patch'] + '\n')
-    return diff
 
 def get_models():
     models = [Codestral()]
     return models
 
 def evaluate_commit(model, commit_record):
-    commit_diff = get_commit_diff(commit_record['api_url'])
+    commit_diff = commit_record['diff']
     commit_sample = f"MESSAGE: {commit_record['message']}\nDIFF: {commit_diff}"
     model_answer = model.evaluate_sample(commit_sample)
     return model_answer
@@ -55,8 +35,13 @@ def get_instructions():
     df['explanation_column_name'] = df['category'] + '_expl'
     return df
 
+def get_commits():
+    file_name = "./commits.csv"
+    df = pd.read_csv(file_name)
+    return df
+
 if __name__ == '__main__':
-    commits = get_commits()[:10]
+    commits = get_commits()[:2]
     models = get_models()
     contains_whys = []
     explanations = []

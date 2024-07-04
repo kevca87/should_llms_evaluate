@@ -42,7 +42,7 @@ class Codestral(LLM):
             "response_format": {
                 "type": "json_object"
             },
-            "temperature": 0.0,
+            # "temperature": 0.0,
             # "top_p": 1,
             # "max_tokens": 512,
             # "stream": false,

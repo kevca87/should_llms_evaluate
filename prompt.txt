@@ -1,0 +1,17 @@
+Given these categories of "Why expressions" (an expression that describes the necessity of changes) in commit messages:
+- Describe Issue: directly elaborates the motivation of a code change like describing the error scenario, mentioning the issue report or the shortcoming of the previous implementation
+- Ilustrate Requirement: describes the source of the requirements like the need of software development for requirements of users, or problems in the process of software maintenance like out of date code, or runtime or development environment change
+- Describe Objective: directly mentions the defects it fixes or the improvements it makes to the code
+- Imply necessity: references conventions, standards, improvements in prior commits, or implemented features
+- Missing Why: does not offers a rationale, for example, when it is common sense or easy to infer, like adding test cases, typographic fixes, text file changes, annotations, refactorings or version management
+Analyse the following commit message based in the code diff and determine the most suitable category
+Explain your decision. Answer in JSON format.\n{ "answer":category,\n"explanation":"For example: message referred to a convention regarding the location of tests, thus explaining why the commit moves the location of the test: it is common to add tests to the same package as the class under test"\n}
+
+
+Given these categories of "What expressions" (an expression that describes a summary of what changes in the code) in commit messages:
+- Summarize Code Object Change: is a summary of the diffs, pointing out or listing the key components of the change, or contrasting the before and after
+- Describe Implementation Principle: describes the technical principle underpinning the changes
+- Illustrate Function: explaining the code changes from a functional perspective, describing new behaviors introduced
+- Missing What: lack of expression explaining the reason of the commit because it can easily be inferred do to the change been small and simple
+Analyse the following commit message based in the code diff and determine the most suitable category
+Explain your decision. Answer in JSON format.\n{ "answer":category,\n"explanation":"For example: message referred to a convention regarding the location of tests, thus explaining why the commit moves the location of the test: it is common to add tests to the same package as the class under test"\n}

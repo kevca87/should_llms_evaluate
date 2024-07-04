@@ -3,7 +3,7 @@ from llm import LLM
 from codestral import Codestral
 from github_api import get_commit_info
 from time import sleep
-
+import numpy as np
 
 def get_models():
     models = [Codestral()]
@@ -16,17 +16,22 @@ def evaluate_commit(model, commit_record):
     return model_answer
 
 def evaluate_commits_with_instruction(model, commits, instruction):
-    answers = []
-    explanations = []
-    model.instruct(instruction)
+    model.instruct(instruction['instruction'])
     total = len(commits)
+    column_names = commits.columns.to_list()
+    column_names.remove('diff')
+    column_names.remove('url')
+    column_names.remove('message')
+    commits[instruction['answer_column_name']] = pd.Series(dtype='bool')
+    commits[instruction['explanation_column_name']] = pd.Series(dtype='str')
     for idx, commit in commits.iterrows():
         model_answer = evaluate_commit(model, commit)
-        answers.append(model_answer['answer'])
-        explanations.append(model_answer['explanation'])
+        commits.loc[idx,instruction['answer_column_name']] = model_answer['answer']
+        commits.loc[idx,instruction['explanation_column_name']] = model_answer['explanation']
         print(f'Progress: {idx+1}/{total}',end='\r')
-        sleep(2)
-    return  {'answers':answers, 'explanations': explanations}
+        commits.to_csv(f'./cme_{model.name}.csv', index=False, columns=column_names) # Commit Message Evaluation
+        sleep(1.8)
+    return  commits
 
 def get_instructions():
     file_name = "./data/category_instructions.xlsx"
@@ -37,11 +42,12 @@ def get_instructions():
 
 def get_commits():
     file_name = "./commits.csv"
+    # file_name = "./data/sampled messages.csv"
     df = pd.read_csv(file_name)
     return df
 
 if __name__ == '__main__':
-    commits = get_commits()[:2]
+    commits = get_commits()
     models = get_models()
     contains_whys = []
     explanations = []
@@ -49,11 +55,8 @@ if __name__ == '__main__':
     for model in models:
         for idx, instruction in instructions.iterrows():
             print (f'Instruction {instruction["category"]}')
-            results = evaluate_commits_with_instruction(model, commits, instruction['instruction'])
-            commits[instruction['answer_column_name']] = results['answers']
-            commits[instruction['explanation_column_name']] = results['explanations']
-        commits.to_csv(f'./cme_{model.name}.csv', index=False) # Commit Message Evaluation
-        
+            commits = evaluate_commits_with_instruction(model, commits, instruction)
+    commits.to_csv(f'./cme_{model.name}_finished.csv', index=False) # Commit Message Evaluation
 
 # Rate limit 30 per minute and 2000 per day
 # https://docs.mistral.ai/capabilities/code_generation/

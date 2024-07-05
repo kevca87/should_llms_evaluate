@@ -15,3 +15,17 @@ Given these categories of "What expressions" (an expression that describes a sum
 - Missing What: lack of expression explaining the reason of the commit because it can easily be inferred do to the change been small and simple
 Analyse the following commit message based in the code diff and determine the most suitable category
 Explain your decision. Answer in JSON format.\n{ "answer":category,\n"explanation":"For example: message referred to a convention regarding the location of tests, thus explaining why the commit moves the location of the test: it is common to add tests to the same package as the class under test"\n}
+
+
+A commit message could contain expressions that: 
+- summarize the changes in the commit (noted as ‘What’)
+- describe the reasons for the changes (noted as ‘Why’). 
+
+Based on whether the message contain these expressions there are four categories: 
+- Neither Why or What: 
+- No Why: (only What information, but no Why)
+- No What: (only Why, but no What)
+- Why and What: (containing both)
+
+Analyze the following commit message based in the code diff and determine the most suitable category.
+Explain your decision. Answer in JSON format.\n{\n"answer":category,\n"explanation":"The message presents the why in the first part"\n}

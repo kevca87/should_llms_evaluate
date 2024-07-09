@@ -1,3 +1,10 @@
 # Should LLMs evaluate or should not?
 **An evaluation of the evaluative capabilities of the Large Language Models for Code Tasks**
 
+- Los resultados obtenidos en formato csv junto con los jupyter notebooks utilizados para su análisis, pueden encontrarse en la carpeta [results](./results/)
+
+- En [experiments](./experiments/) puede encontrarse el código utilizado para correr los experimentos, en los cuales se realizaron las llamadas a la API de Mistral. En [model_evaluation](./experiments/model_evaluation.py) se corrieron los experimentos 1 y 2. Mientras que el experimento 3 se corrió en [experiment_3](./experiments/experiment_3.py). Los diferentes prompts utilizados en cada experimento se incluyen en la carpeta [prompts](./prompts/)
+
+### Abstract
+
+Durante el proceso de desarrollo de software es importante que los mensajes de commit contengan la información necesaria para que cualquier desarrollador pueda entender los cambios realizados. Según estudios previos, la presencia o ausencia de esta información puede interpretarse como si el mensaje es de buena o mala calidad y da pie a la definición de  una taxonomía que clasifica los mensajes según expliciten el "Qué cambió" y el "Por qué del cambio". Sin embargo, si bien una taxonomía puede encontrarse claramente definida, el utilizarla para clasificar un gran número de mensajes resulta en una tarea laboriosa y compleja. Por ello, el presente estudio busca evaluar la capacidad de los LLMs para clasificar mensajes, sin realizar algún entrenamiento previo sobre los modelos y utilizando únicamente descripciones de las categorías previamente definidas. Para ello se realizaron tres experimentos sobre dos conjuntos de mensajes de commit. En cada experimento se utilizó una estrategia para que el LLM clasificara el mensaje, y se comparó su respuesta con la clasificación humana. Los resultados muestran que, aunque los LLMs son capaces de realizar la tarea, la precisión y la concordancia con las clasificaciones humanas son limitadas, sugiriendo que para qué esta metodología sea efectiva, las categorías en las cuales se clasifica deben encontrarse claramente delimitadas.
